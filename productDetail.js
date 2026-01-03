@@ -39,23 +39,23 @@ async function productRender() {
             <div class="mb-4">
             <label class="form-label fw-semibold">Select Color:</label>
             ${data.colors
-              .map((color) => {
-                return `  
+          .map((color) => {
+            return `  
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-dark rounded-circle p-3 b" style="background-color:${color};" ></button>
                    
                 </div>`;
-              })
-              .join("")}
+          })
+          .join("")}
               
             </div>
 
             <div class="d-flex gap-3 mb-4">
                
                 <button onclick="addtocart(${JSON.stringify(data).replace(
-                  /"/g,
-                  "&quot;"
-                )})" class="btn btn-primary px-5 py-2 w-100"><i class="bi bi-cart-plus me-2"></i>Add to Cart</button>
+            /"/g,
+            "&quot;"
+          )})" class="btn btn-primary px-5 py-2 w-100"><i class="bi bi-cart-plus me-2"></i>Add to Cart</button>
             </div>
             
             <button class="btn btn-outline-danger w-100"><i class="bi bi-heart me-2"></i>Add to Wishlist</button>
@@ -90,22 +90,63 @@ window.addtocart = function (data) {
   }
 
   console.log(cart);
-  localStorage.setItem('cart',JSON.stringify(cart))
-  alert('item added in cart')
+  localStorage.setItem('cart', JSON.stringify(cart))
+  alert('Item added in cart')
+}
 
-//Showing cart continer in offcanvas
-let cartContainer = document.querySelector('.cartContainer');
+  //Showing cart continer in offcanvas
+  //Showing products in cart
+  let cartContainer = document.querySelector('.cartContainer');
+  let btnDrawer = document.getElementById('btn-drawer');
+  let total = document.getElementById('total');
+  let totalPrice = 0
 
-function cartHandle(){
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    cart.forEach(element => {
-        console.log(element);
-        
+  function cartHandle() {
+    let cart = JSON.parse(localStorage.getItem('cart')) 
+    cartContainer.innerHTML = ''
+    cart.forEach((product, index) => {
+      console.log(product, index);
+
+      totalPrice = product.price * product.quantity
+      cartContainer.innerHTML += `
+            <div class="d-flex">
+      <img src="${product.imgUrl}" alt="" width="100" class='mt-3 mb-3'>
+      <div>
+     <h3>${product.name}</h3>
+      <p>${product.price}</p>
+        <div class="colorBtn" style="background-color:;"></div>
+      </div>
+      <div class="d-flex justify-content-center align-items-center">
+      <button onclick="updateQunatity(${index},1)">+</button>
+      <p>${product.quantity}</p>
+      <button onclick=" updateQunatity(${index},-1)">-</button>
+      </div>
+      </div>
+      </div>
+        `;
     });
-}
 
-cartHandle()
+    total.innerHTML = totalPrice;
+  }
+  btnDrawer.addEventListener("click", cartHandle);
 
-}
- 
+  window.updateQunatity = function (index, operend) {
+    console.log(index, operend);
+
+    let cart = JSON.parse(localStorage.getItem('cart'))
+    console.log('Its cart ' + cart[index]);
+
+    cart[index].quantity += operend;
+    console.log('Its updated value of cart ', cart);
+
+
+    if (cart[index].quantity <= 0) {
+      cart.splice(index, 1)
+    }
+    localStorage.setItem("cart", JSON.stringify(cart))
+    cartHandle()
+  }
+  btnDrawer.addEventListener("click", cartHandle);
+
+
 
